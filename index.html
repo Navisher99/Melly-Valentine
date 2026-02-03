@@ -16,7 +16,6 @@ body {
   justify-content: center;
   text-align: center;
   overflow: hidden;
-  transform: scale(0.9);
 }
 
 .card {
@@ -107,6 +106,12 @@ img {
 @keyframes confettiFall {
   to { transform: translateY(600px) rotate(360deg); opacity: 0; }
 }
+
+/* Make buttons larger on small screens */
+@media(max-width: 500px){
+  #yesBtn { font-size: 22px; padding: 18px 40px; }
+  #noBtn { font-size: 16px; padding: 14px 18px; }
+}
 </style>
 </head>
 
@@ -133,7 +138,7 @@ const card = document.getElementById("card");
 
 const yesMessages = [
 "Goood Girl, now you’re officially Bid daddy's Valentine",
-  "Yes, OKay, I said I'll take you out",
+  "Yes, OKay, I'll take you out",
   "Yes Yes YEs",
   "Yes You can order whatever you want",
   "Okay fine, You can have this Dick later too"
@@ -161,7 +166,6 @@ function teleportNo() {
     const noRight = noLeft + noBtn.clientWidth;
     const noBottom = noTop + noBtn.clientHeight;
 
-    // prevent overlapping YES button
     overlap = !(noRight < yesRect.left || noLeft > yesRect.right || noBottom < yesRect.top || noTop > yesRect.bottom);
   } while(overlap);
 
@@ -169,30 +173,37 @@ function teleportNo() {
   noBtn.style.top = y + "px";
 }
 
-// Runaway effect on hover
+// Runaway for desktop hover
 noBtn.addEventListener("mouseover", teleportNo);
+// Runaway for mobile touch
+noBtn.addEventListener("touchstart", teleportNo);
 
-// NO button click cycles text and shakes page
-noBtn.addEventListener("click", () => {
+// NO button click = cycle text + shake + teleport
+function handleNo(e){
+  e.preventDefault();
   noBtn.textContent = noTexts[noIndex];
   noIndex = (noIndex + 1) % noTexts.length;
 
   document.body.classList.add("shake");
   setTimeout(() => document.body.classList.remove("shake"), 300);
 
-  teleportNo(); // optional: also teleport on click
-});
+  teleportNo(); // move button immediately
+}
+noBtn.addEventListener("click", handleNo);
+noBtn.addEventListener("touchstart", handleNo);
 
 /* ---------- HEARTS ON HOVER ---------- */
-yesBtn.addEventListener("mouseover", e=>{
+function spawnHeart(e){
   const heart = document.createElement("div");
   heart.className = "heart";
   heart.textContent = "💖";
-  heart.style.left = e.clientX + "px";
-  heart.style.top = e.clientY + "px";
+  heart.style.left = (e.clientX || e.touches[0].clientX) + "px";
+  heart.style.top = (e.clientY || e.touches[0].clientY) + "px";
   document.body.appendChild(heart);
   setTimeout(()=>heart.remove(),1500);
-});
+}
+yesBtn.addEventListener("mouseover", spawnHeart);
+yesBtn.addEventListener("touchstart", spawnHeart);
 
 /* ---------- CONFETTI ---------- */
 function createConfetti(){
