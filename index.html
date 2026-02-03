@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine 💖</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  transform: scale(0.9);
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  max-width: 350px;
+  transition: color 0.3s;
+}
+
+h1 { color: #ff4d6d; transition: color 0.3s; }
+
+img {
+  width: 105%;
+  margin-left: -2.5%;
+  border-radius: 15px;
+  margin: 15px 0;
+}
+
+.buttons {
+  position: relative;
+  height: 180px;
+  margin-top: 20px;
+}
+
+#yesBtn {
+  font-size: 28px;
+  padding: 22px 50px;
+  background: #ff4d6d;
+  color: white;
+  border: none;
+  border-radius: 60px;
+  cursor: pointer;
+  position: absolute;
+  left: 50%;
+  top: 50px;
+  transform: translateX(-50%);
+  transition: transform 0.15s ease;
+  z-index: 2;
+}
+
+#noBtn {
+  position: absolute;
+  font-size: 14px;
+  padding: 10px 16px;
+  background: #ccc;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.heart {
+  position: absolute;
+  color: pink;
+  animation: floatUp 1.5s linear forwards;
+  pointer-events: none;
+}
+
+@keyframes floatUp {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-80px); }
+}
+
+.shake {
+  animation: shake 0.3s;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: hsl(0, 100%, 50%);
+  z-index: 999;
+  pointer-events: none;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  to { transform: translateY(600px) rotate(360deg); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card" id="card">
+  <h1 id="cardTitle">Will you please be my Valentine Melodie 🥹?</h1>
+
+  <img id="valGif" src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif">
+
+  <div class="buttons">
+    <button id="yesBtn">YES 💖</button>
+    <button id="noBtn">No</button>
+  </div>
+</div>
+
+<script>
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const area = document.querySelector(".buttons");
+const valGif = document.getElementById("valGif");
+const cardTitle = document.getElementById("cardTitle");
+const card = document.getElementById("card");
+
+const yesMessages = [
+"Goood Girl, now you’re officially Bid daddy's Valentine",
+  "Yes, OKay, I said I'll take you out",
+  "Yes Yes YEs",
+  "Yes You can order whatever you want",
+  "Okay fine, You can have this Dick later too"
+];
+
+const noTexts = ["Are you sure?", "Try again", "Wrong answer", "Mistake?", "Last chance", "C'mon", "No"];
+let yesIndex = 0;
+let noIndex = 0;
+
+/* ---------- NO BUTTON ---------- */
+function teleportNo() {
+  const maxX = area.clientWidth - noBtn.clientWidth;
+  const maxY = area.clientHeight - noBtn.clientHeight;
+
+  const yesRect = yesBtn.getBoundingClientRect();
+  const areaRect = area.getBoundingClientRect();
+
+  let x, y, overlap;
+  do {
+    x = Math.random() * maxX;
+    y = Math.random() * maxY;
+
+    const noLeft = areaRect.left + x;
+    const noTop = areaRect.top + y;
+    const noRight = noLeft + noBtn.clientWidth;
+    const noBottom = noTop + noBtn.clientHeight;
+
+    // prevent overlapping YES button
+    overlap = !(noRight < yesRect.left || noLeft > yesRect.right || noBottom < yesRect.top || noTop > yesRect.bottom);
+  } while(overlap);
+
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+}
+
+// Runaway effect on hover
+noBtn.addEventListener("mouseover", teleportNo);
+
+// NO button click cycles text and shakes page
+noBtn.addEventListener("click", () => {
+  noBtn.textContent = noTexts[noIndex];
+  noIndex = (noIndex + 1) % noTexts.length;
+
+  document.body.classList.add("shake");
+  setTimeout(() => document.body.classList.remove("shake"), 300);
+
+  teleportNo(); // optional: also teleport on click
+});
+
+/* ---------- HEARTS ON HOVER ---------- */
+yesBtn.addEventListener("mouseover", e=>{
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.textContent = "💖";
+  heart.style.left = e.clientX + "px";
+  heart.style.top = e.clientY + "px";
+  document.body.appendChild(heart);
+  setTimeout(()=>heart.remove(),1500);
+});
+
+/* ---------- CONFETTI ---------- */
+function createConfetti(){
+  for(let i=0;i<80;i++){
+    const c = document.createElement("div");
+    c.className="confetti-piece";
+    c.style.backgroundColor=`hsl(${Math.random()*360},100%,50%)`;
+    c.style.left=Math.random()*window.innerWidth+"px";
+    c.style.top="-10px";
+    c.style.animationDuration=(Math.random()*1+1.5)+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),2000);
+  }
+}
+
+/* ---------- YES CLICK ---------- */
+yesBtn.addEventListener("click",()=>{
+  createConfetti();
+  valGif.src = "https://media.giphy.com/media/l0HlOvJ7yaacpuSas/giphy.gif"; // dinner date GIF
+  cardTitle.textContent = yesMessages[yesIndex];
+  card.style.color = "black"; // change font color
+  yesIndex = (yesIndex + 1) % yesMessages.length;
+});
+
+// Initialize NO button
+teleportNo();
+</script>
+
+</body>
+</html>
